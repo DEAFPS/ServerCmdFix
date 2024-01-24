@@ -15,12 +15,21 @@ namespace SharpTimer
         public override void Load(bool hotReload)
         {
 
-            RegisterListener<Listeners.OnMapStart>(OnMapStartHandler);
+            RegisterListener<Listeners.OnMapStart>(mapName =>
+            {
+                KillServerCmdEnts();
+            });
+            
+            RegisterEventHandler<EventRoundStart>((@event, info) =>
+            {
+                KillServerCmdEnts();
+                return HookResult.Continue;
+            });
 
             Console.WriteLine("[ServerCmdFix] Plugin Loaded");
         }
 
-        public void OnMapStartHandler(string mapName)
+        public void KillServerCmdEnts()
         {
             var pointServerCommands = Utilities.FindAllEntitiesByDesignerName<CPointServerCommand>("point_servercommand");
             foreach (var servercmd in pointServerCommands)
